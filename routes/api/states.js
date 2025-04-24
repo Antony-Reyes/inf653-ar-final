@@ -1,0 +1,35 @@
+const express = require('express');
+const router = express.Router();
+const statesController = require('../../controllers/statesController');
+const ROLES_LIST = require('../../config/roles_list');
+const verifyRoles = require('../../middleware/verifyRoles');
+
+// Main states routes
+router.route('/')
+    .get(statesController.getAllStates);
+
+// State routes by state code
+router.route('/:state')
+    .get(statesController.getState);
+
+// Fun facts routes
+router.route('/:state/funfact')
+    .get(statesController.getStateFunFact)
+    .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), statesController.createStateFunFact)
+    .patch(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), statesController.updateStateFunFact)
+    .delete(verifyRoles(ROLES_LIST.Admin), statesController.deleteStateFunFact);
+
+// Other state info routes
+router.route('/:state/capital')
+    .get(statesController.getStateCapital);
+
+router.route('/:state/nickname')
+    .get(statesController.getStateNickname);
+
+router.route('/:state/population')
+    .get(statesController.getStatePopulation);
+
+router.route('/:state/admission')
+    .get(statesController.getStateAdmission);
+
+module.exports = router;
