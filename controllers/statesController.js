@@ -20,10 +20,13 @@ const getAllStates = async (req, res) => {
     // Add fun facts from MongoDB to each state
     const statesWithFacts = await Promise.all(statesList.map(async (state) => {
         const stateInDb = await State.findOne({ stateCode: state.code }).exec();
-        return {
-            ...state,
-            funfacts: stateInDb?.funfacts || []
-        };
+        if (stateInDb?.funfacts?.length > 0) {
+            return {
+                ...state,
+                funfacts: stateInDb.funfacts
+            };
+        }
+        return state;
     }));
 
     res.json(statesWithFacts);
@@ -45,10 +48,12 @@ const getState = async (req, res) => {
     // Get fun facts from MongoDB
     const stateInDb = await State.findOne({ stateCode: stateCode }).exec();
     
-    const result = {
-        ...stateData,
-        funfacts: stateInDb?.funfacts || []
-    };
+    let result = { ...stateData };
+    
+    // Only add funfacts property if it exists and has items
+    if (stateInDb?.funfacts?.length > 0) {
+        result.funfacts = stateInDb.funfacts;
+    }
     
     res.json(result);
 };
@@ -208,19 +213,19 @@ const updateStateFunFact = async (req, res) => {
         return res.status(400).json({ 'message': 'State code required.' });
     }
 
+    const stateCode = req.params.state.toUpperCase();
+    const stateData = findState(stateCode);
+    
+    if (!stateData) {
+        return res.status(404).json({ 'message': 'Invalid state abbreviation parameter' });
+    }
+
     if (!req?.body?.index) {
         return res.status(400).json({ 'message': 'State fun fact index value required' });
     }
 
     if (!req?.body?.funfact) {
         return res.status(400).json({ 'message': 'State fun fact value required' });
-    }
-
-    const stateCode = req.params.state.toUpperCase();
-    const stateData = findState(stateCode);
-    
-    if (!stateData) {
-        return res.status(404).json({ 'message': 'Invalid state abbreviation parameter' });
     }
 
     // Get state from MongoDB
@@ -254,15 +259,15 @@ const deleteStateFunFact = async (req, res) => {
         return res.status(400).json({ 'message': 'State code required.' });
     }
 
-    if (!req?.body?.index) {
-        return res.status(400).json({ 'message': 'State fun fact index value required' });
-    }
-
     const stateCode = req.params.state.toUpperCase();
     const stateData = findState(stateCode);
     
     if (!stateData) {
         return res.status(404).json({ 'message': 'Invalid state abbreviation parameter' });
+    }
+
+    if (!req?.body?.index) {
+        return res.status(400).json({ 'message': 'State fun fact index value required' });
     }
 
     // Get state from MongoDB

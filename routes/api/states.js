@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const statesController = require('../../controllers/statesController');
-const ROLES_LIST = require('../../config/roles_list');
-const verifyRoles = require('../../middleware/verifyRoles');
 
 // Main states routes
 router.route('/')
@@ -15,9 +13,9 @@ router.route('/:state')
 // Fun facts routes
 router.route('/:state/funfact')
     .get(statesController.getStateFunFact)
-    .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), statesController.createStateFunFact)
-    .patch(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), statesController.updateStateFunFact)
-    .delete(verifyRoles(ROLES_LIST.Admin), statesController.deleteStateFunFact);
+    .post(statesController.createStateFunFact)
+    .patch(statesController.updateStateFunFact)
+    .delete(statesController.deleteStateFunFact);
 
 // Other state info routes
 router.route('/:state/capital')
