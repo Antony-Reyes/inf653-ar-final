@@ -10,7 +10,7 @@
   "author": "Dave Gray",
   "license": "ISC",
   "engines": {
-    "node": "15.0.0"
+    "node": "^16.0.0"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
