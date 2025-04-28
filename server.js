@@ -45,13 +45,12 @@ app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 
-// Protect /employees routes with JWT validation
+// New route for states - MOVED ABOVE JWT VERIFICATION
+app.use('/states', require('./routes/api/states'));
+
+// Protect routes below with JWT validation
 app.use(verifyJWT);
 app.use('/employees', require('./routes/api/employees'));
-
-// New route for states
-app.use('/states', require('./routes/api/states')); // Add this line
-
 app.use('/users', require('./routes/api/users'));
 
 app.all('*', (req, res) => {
