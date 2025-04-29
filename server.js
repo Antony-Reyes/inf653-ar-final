@@ -48,11 +48,6 @@ app.use('/logout', require('./routes/logout'));
 // New route for states - MOVED ABOVE JWT VERIFICATION
 app.use('/states', require('./routes/api/states'));
 
-// Protect routes below with JWT validation
-app.use(verifyJWT);
-app.use('/employees', require('./routes/api/employees'));
-app.use('/users', require('./routes/api/users'));
-
 app.all('*', (req, res) => {
     res.status(404);
     if (req.accepts('html')) {
@@ -63,6 +58,11 @@ app.all('*', (req, res) => {
         res.type('txt').send("404 Not Found");
     }
 });
+
+// Protect routes below with JWT validation
+app.use(verifyJWT);
+app.use('/employees', require('./routes/api/employees'));
+app.use('/users', require('./routes/api/users'));
 
 app.use(errorHandler);
 
